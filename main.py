@@ -232,7 +232,7 @@ def calc_retirement(gender, dt_entry, days_before):
                 days_before = 5*365
             
             remaing_time = timedelta(days=(35*365)) - (timedelta(days=int(days_before)) + (datetime.now() - dt_entry_datetime))
-    ped = {"pedagio tipo 1": 0, "pedagio tipo 2": 0}
+    ped = {"pedagio 17%": 0, "pedagio 4 meses": 0}
     if(datetime.now() + remaing_time>datetime.strptime("2021-12-31", "%Y-%m-%d")):
         ped["pedagio 17%"] = ( remaing_time + timedelta(days = (remaing_time.days*0.17))).days
         ped["pedagio 4 meses"] = ( remaing_time + relativedelta(months=+4)).days
