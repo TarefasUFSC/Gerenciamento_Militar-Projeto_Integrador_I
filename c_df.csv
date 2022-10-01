@@ -1,0 +1,66 @@
+,id_curso_matricula,matricula,id_curso_militar_curso,id_curso_cursos,nm_curso,id_tipo_curso
+0,0,900001,7,7,Direito,0
+1,1,900001,0,0,CFSD,1
+2,2,900001,18,18,Libras,3
+3,3,900002,8,8,Sociologia,0
+4,4,900002,0,0,CFSD,1
+5,5,900002,1,1,CHC,1
+6,6,900002,11,11,Táticas Policiais,2
+7,7,900002,19,19,Letras,3
+8,8,900003,9,9,Filosofia,0
+9,9,900003,0,0,CFSD,1
+10,10,900003,1,1,CHC,1
+11,11,900003,12,12,PROERD,2
+12,12,900004,10,10,Ciência da Computação,0
+13,13,900004,0,0,CFSD,1
+14,14,900004,1,1,CHC,1
+15,15,900004,2,2,CFS,1
+16,16,900004,13,13,Operações Especiais,2
+17,17,900004,20,20,Técnico em Informática,3
+18,18,900005,7,7,Direito,0
+19,19,900005,0,0,CFSD,1
+20,20,900005,1,1,CHC,1
+21,21,900005,2,2,CFS,1
+22,22,900005,3,3,CAS,1
+23,23,900005,11,11,Táticas Policiais,2
+24,24,900005,13,13,Operações Especiais,2
+25,25,900006,8,8,Sociologia,0
+26,26,900006,0,0,CFSD,1
+27,27,900006,1,1,CHC,1
+28,28,900006,2,2,CFS,1
+29,29,900006,3,3,CAS,1
+30,30,900007,9,9,Filosofia,0
+31,31,900007,4,4,CFO,1
+32,32,900007,14,14,Operações de Choque,2
+33,33,900008,10,10,Ciência da Computação,0
+34,34,900008,4,4,CFO,1
+35,35,900008,21,21,Técnico em Enfermagem,3
+36,36,900009,7,7,Direito,0
+37,37,900009,4,4,CFO,1
+38,38,900009,22,22,Mestrado em Direito,3
+39,39,900009,23,23,Doutorado em Direito,3
+40,40,900010,8,8,Sociologia,0
+41,41,900010,4,4,CFO,1
+42,42,900010,15,15,Polícia Comunitária,2
+43,43,900011,9,9,Filosofia,0
+44,44,900011,4,4,CFO,1
+45,45,900011,5,5,CAO,1
+46,46,900011,16,16,Instruto de Tiro,2
+47,47,900011,24,24,Economia,3
+48,48,900011,25,25,Mestrado em Engenharia do Conhecimento,3
+49,49,900012,10,10,Ciência da Computação,0
+50,50,900012,4,4,CFO,1
+51,51,900012,5,5,CAO,1
+52,52,900013,7,7,Direito,0
+53,53,900013,4,4,CFO,1
+54,54,900013,5,5,CAO,1
+55,55,900013,6,6,CSPM,1
+56,56,900013,12,12,PROERD,2
+57,57,900013,15,15,Polícia Comunitária,2
+58,58,900013,17,17,Koban,2
+59,59,900014,8,8,Sociologia,0
+60,60,900014,0,0,CFSD,1
+61,61,900015,9,9,Filosofia,0
+62,62,900015,0,0,CFSD,1
+63,63,900015,10,10,Ciência da Computação,0
+64,64,900015,0,0,CFSD,1
