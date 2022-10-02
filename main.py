@@ -98,7 +98,7 @@ def get_couses_data(df, df_cursos, df_militar_curso):
         df_cursos, on='id_curso', how='left', lsuffix='_militar_curso', rsuffix='_cursos')
     # c_df.to_csv("c_df.csv")
     c_df = c_df.query(
-        'id_tipo_curso == 1 or id_tipo_curso == 1 or id_tipo_curso == 2')
+        'id_tipo_curso == 1 or id_tipo_curso == 2 or id_tipo_curso == 3')
     # print(c_df)
     courses = c_df['nm_curso'].unique().tolist()
     # print(formacoes)
