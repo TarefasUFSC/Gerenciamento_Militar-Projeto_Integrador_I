@@ -217,8 +217,7 @@ def calc_retirement(gender, dt_entry, ids_tipo, qtds_dias, df_tipo_tempo):
             for i, tipo in enumerate(ids_tipo):
                 d_t_ant = d_t_ant - timedelta(days=int(qtds_dias[i]))
 
-            remaing_time = timedelta(
-                days=(35*365)) - ((datetime.now() - dt_entry_datetime) - d_t_ant)
+            remaing_time = (dt_entry_datetime.replace(year = dt_entry_datetime.year + 35) - dt_entry_datetime) - ((datetime.now() - dt_entry_datetime) - d_t_ant)
             if (datetime.now() + remaing_time > datetime.strptime("2021-12-31", "%Y-%m-%d")):
                 ped_flag17 = True
                 remaing_time += timedelta(days=(remaing_time.days*0.17))
@@ -233,7 +232,7 @@ def calc_retirement(gender, dt_entry, ids_tipo, qtds_dias, df_tipo_tempo):
             if (n_mili_time/365 > 5):
                 n_mili_time = 5*365
 
-            remaing_time = timedelta(days=(35*365)) - ((datetime.now() - dt_entry_datetime) -
+            remaing_time = (dt_entry_datetime.replace(year = dt_entry_datetime.year + 35) - dt_entry_datetime) - ((datetime.now() - dt_entry_datetime) -
                                                        timedelta(days=mili_time[i]) - timedelta(days=n_mili_time[i]))
             if (datetime.now() + remaing_time > datetime.strptime("2021-12-31", "%Y-%m-%d")):
                 ped_flag17 = True
@@ -255,7 +254,7 @@ def calc_retirement(gender, dt_entry, ids_tipo, qtds_dias, df_tipo_tempo):
                 ped_flag17 = True
                 remaing_time += timedelta(days=(remaing_time.days*0.17))
         if (dt_entry_datetime >= datetime.strptime("2006-09-01", "%Y-%m-%d") and dt_entry_datetime <= datetime.strptime("2013-12-19", "%Y-%m-%d")):
-            remaing_time = timedelta(days=(35*365))
+            remaing_time = (dt_entry_datetime.replace(year = dt_entry_datetime.year + 35) - dt_entry_datetime)
             mili_time = 0
             n_mili_time = 0
             for i, tipo in enumerate(ids_tipo):
@@ -265,7 +264,7 @@ def calc_retirement(gender, dt_entry, ids_tipo, qtds_dias, df_tipo_tempo):
                     n_mili_time += qtd_dias[i]
             if (n_mili_time/365 > 15):
                 n_mili_time = 15*365
-            remaing_time = timedelta(days=(35*365)) - ((datetime.now() - dt_entry_datetime) -
+            remaing_time = (dt_entry_datetime.replace(year = dt_entry_datetime.year + 35) - dt_entry_datetime) - ((datetime.now() - dt_entry_datetime) -
                                                        timedelta(days=mili_time[i]) - timedelta(days=n_mili_time[i]))
             if (datetime.now() + remaing_time > datetime.strptime("2021-12-31", "%Y-%m-%d")):
                 ped_flag17 = True
@@ -276,7 +275,7 @@ def calc_retirement(gender, dt_entry, ids_tipo, qtds_dias, df_tipo_tempo):
                     remaing_time += relativedelta(months=(pd_4m_multiplier*4))
 
         if (dt_entry_datetime > datetime.strptime("2013-12-19", "%Y-%m-%d")):
-            remaing_time = timedelta(days=(35*365))
+            remaing_time = (dt_entry_datetime.replace(year = dt_entry_datetime.year + 35) - dt_entry_datetime)
             mili_time = 0
             n_mili_time = 0
             for i, tipo in enumerate(ids_tipo):
@@ -286,7 +285,7 @@ def calc_retirement(gender, dt_entry, ids_tipo, qtds_dias, df_tipo_tempo):
                     n_mili_time += qtd_dias[i]
             if (n_mili_time/365 > 5):
                 n_mili_time = 5*365
-            remaing_time = timedelta(days=(35*365)) - ((datetime.now() - dt_entry_datetime) -
+            remaing_time = (dt_entry_datetime.replace(year = dt_entry_datetime.year + 35) - dt_entry_datetime) - ((datetime.now() - dt_entry_datetime) -
                                                        timedelta(days=mili_time[i]) - timedelta(days=n_mili_time[i]))
             if (datetime.now() + remaing_time > datetime.strptime("2021-12-31", "%Y-%m-%d")):
                 ped_flag17 = True
@@ -300,26 +299,26 @@ def calc_retirement(gender, dt_entry, ids_tipo, qtds_dias, df_tipo_tempo):
     if (gender == "Masculino"):
         if (dt_entry_datetime <= datetime.strptime("2013-12-19", "%Y-%m-%d")):
             # os 35 anos de serviço aqui contam trabalhos anteriores?
-            remaing_time = timedelta(days=(35*365)) - ((datetime.now() - dt_entry_datetime))
+            remaing_time = (dt_entry_datetime.replace(year = dt_entry_datetime.year + 35) - dt_entry_datetime) - ((datetime.now() - dt_entry_datetime))
         if (dt_entry_datetime > datetime.strptime("2013-12-19", "%Y-%m-%d")):
             if (days_before/365 > 5):
                 days_before = 5*365
-            remaing_time = timedelta(days=(35*365)) - (timedelta(days=int(days_before)) + (datetime.now() - dt_entry_datetime))
+            remaing_time = (dt_entry_datetime.replace(year = dt_entry_datetime.year + 35) - dt_entry_datetime) - (timedelta(days=int(days_before)) + (datetime.now() - dt_entry_datetime))
     else:
         if (dt_entry_datetime <= datetime.strptime("2006-08-31", "%Y-%m-%d")):
-            remaing_time = timedelta(days=(35*365)) - ( (datetime.now() - dt_entry_datetime))
+            remaing_time = (dt_entry_datetime.replace(year = dt_entry_datetime.year + 35) - dt_entry_datetime) - ( (datetime.now() - dt_entry_datetime))
         if (dt_entry_datetime >= datetime.strptime("2006-09-01", "%Y-%m-%d") and dt_entry_datetime <= datetime.strptime("2013-12-19", "%Y-%m-%d")):
             if (days_before/365 > 20):
                 days_before = 20*365
             
-            remaing_time = timedelta(days=(35*365)) - (timedelta(days=int(days_before)) + (datetime.now() - dt_entry_datetime))
+            remaing_time = (dt_entry_datetime.replace(year = dt_entry_datetime.year + 35) - dt_entry_datetime) - (timedelta(days=int(days_before)) + (datetime.now() - dt_entry_datetime))
 
         
         if (dt_entry_datetime > datetime.strptime("2013-12-19", "%Y-%m-%d")):
             if (days_before/365 > 5):
                 days_before = 5*365
             
-            remaing_time = timedelta(days=(35*365)) - (timedelta(days=int(days_before)) + (datetime.now() - dt_entry_datetime))
+            remaing_time = (dt_entry_datetime.replace(year = dt_entry_datetime.year + 35) - dt_entry_datetime) - (timedelta(days=int(days_before)) + (datetime.now() - dt_entry_datetime))
     ped = {"pedagio 17%": 0, "pedagio 4 meses": 0}
     if(datetime.now() + remaing_time>datetime.strptime("2021-12-31", "%Y-%m-%d")):
         ped["pedagio 17%"] = ( remaing_time + timedelta(days = (remaing_time.days*0.17))).days
