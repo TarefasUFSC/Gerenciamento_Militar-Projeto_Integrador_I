@@ -208,6 +208,7 @@ def calc_retirement(gender, dt_entry, ids_tipo, qtds_dias, df_tipo_tempo):
     '''
     # print(str(dt_entry))
     ped_flag17, ped_flag4m = False, False
+    pd_4m_multiplier = 0
     dt_entry_datetime = datetime.strptime(str(dt_entry), "%Y-%m-%d")
     remaing_time = timedelta(days=0)
     if (gender == "Masculino"):
@@ -239,7 +240,8 @@ def calc_retirement(gender, dt_entry, ids_tipo, qtds_dias, df_tipo_tempo):
                 remaing_time += timedelta(days=(remaing_time.days*0.17))
                 if (mili_time < 30*365):
                     ped_flag4m = True
-                    remaing_time += relativedelta(months=4)
+                    pd_4m_multiplier = int((30*365 - mili_time)/365)
+                    remaing_time += relativedelta(months=(pd_4m_multiplier*4))
 
     else:
         if (dt_entry_datetime <= datetime.strptime("2006-08-31", "%Y-%m-%d")):
@@ -270,7 +272,8 @@ def calc_retirement(gender, dt_entry, ids_tipo, qtds_dias, df_tipo_tempo):
                 remaing_time += timedelta(days=(remaing_time.days*0.17))
                 if (mili_time < 20*365):
                     ped_flag4m = True
-                    remaing_time += relativedelta(months=4)
+                    pd_4m_multiplier = int((30*365 - mili_time)/365)
+                    remaing_time += relativedelta(months=(pd_4m_multiplier*4))
 
         if (dt_entry_datetime > datetime.strptime("2013-12-19", "%Y-%m-%d")):
             remaing_time = timedelta(days=(35*365))
@@ -290,7 +293,8 @@ def calc_retirement(gender, dt_entry, ids_tipo, qtds_dias, df_tipo_tempo):
                 remaing_time += timedelta(days=(remaing_time.days*0.17))
                 if (mili_time < 30*365):
                     ped_flag4m = True
-                    remaing_time += relativedelta(months=4)
+                    pd_4m_multiplier = int((30*365 - mili_time)/365)
+                    remaing_time += relativedelta(months=(pd_4m_multiplier*4))
 
     '''
     if (gender == "Masculino"):
