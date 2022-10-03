@@ -248,8 +248,7 @@ def calc_retirement(gender, dt_entry, ids_tipo, qtds_dias, df_tipo_tempo):
             for i, tipo in enumerate(ids_tipo):
                 d_t_ant = d_t_ant - timedelta(days=int(qtds_dias[i]))
 
-            remaing_time = timedelta(
-                days=(35*365)) - ((datetime.now() - dt_entry_datetime) - d_t_ant)
+            remaing_time = (dt_entry_datetime.replace(year = dt_entry_datetime.year + 35) - dt_entry_datetime) - ((datetime.now() - dt_entry_datetime) - d_t_ant)
             if (datetime.now() + remaing_time > datetime.strptime("2021-12-31", "%Y-%m-%d")):
                 ped_flag17 = True
                 remaing_time += timedelta(days=(remaing_time.days*0.17))
