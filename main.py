@@ -1,5 +1,5 @@
 import pandas as pd
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from pprint import pprint
 
@@ -190,6 +190,21 @@ def get_city_data(df):
         cidade_lotacao[city] += 1
     return cidade_lotacao
 
+def calc_theoretical_retirement(dt_theoretical_retirement,dt_entry,min_mili_time_years,max_civil_time_years,tmp_civil,tmp_military):
+    #print("dt_theoretical_retirement",dt_theoretical_retirement, "tmp_civil",tmp_civil,"tmp_military",tmp_military)
+    if(max_civil_time_years):
+        if(tmp_civil>365,25*max_civil_time_years):
+            tmp_civil=365,25*max_civil_time_years
+    time_spent_on_military = (dt_theoretical_retirement - dt_entry - timedelta(days=tmp_military)).days
+    if(min_mili_time_years):
+        if(time_spent_on_military<365,25*min_mili_time_years):
+            time_4_month_years = int((min_mili_time_years-time_spent_on_military)/365.25)
+    else:
+        time_4_month_years = 0
+    dt_theoretical_retirement = dt_theoretical_retirement - timedelta(days=tmp_civil) - timedelta(days=tmp_military)
+    
+    #print("dt_theoretical_retirement",dt_theoretical_retirement)
+    return dt_theoretical_retirement,time_4_month_years
 
 def calc_retirement(gender, dt_entry, ids_tipo, qtds_dias, df_tipo_tempo):
     '''
@@ -207,124 +222,53 @@ def calc_retirement(gender, dt_entry, ids_tipo, qtds_dias, df_tipo_tempo):
             Se até 31/12/2021 tiver fechado as regras anteriores, não há pedágio. Caso contrário, do tempo que restar para fechar o tempo militar em 01/01/2022 deve ser acrescentado 4 meses para cada ano faltante.
     '''
     # print(str(dt_entry))
-    ped_flag17, ped_flag4m = False, False
-    pd_4m_multiplier = 0
-    dt_entry_datetime = datetime.strptime(str(dt_entry), "%Y-%m-%d")
-    remaing_time = timedelta(days=0)
+
+    # A conta do pedágio de 17% é sobre a diff de tempo entre a aposentadoria teorica e a data de mudança da regra 01/01/2022
+
+    dt_entry = datetime.strptime(str(dt_entry), "%Y-%m-%d")
+    dt_theoretical_retirement = dt_entry + relativedelta(years=+35)
+    dt_ret = datetime.now()
+
+    time_4_month_years = 0
+    toll_17_pc = 0
+
+    tmp_military = 0
+    tmp_civil = 0
+    #print(qtds_dias)
+    for i, tipo in enumerate(ids_tipo):
+        if (df_tipo_tempo[df_tipo_tempo['id_tipo'] == tipo]['is_militar'].values[0] == 1):
+            tmp_military += int(qtds_dias[i])
+        else:
+            tmp_civil += int(qtds_dias[i])
+    
+
     if (gender == "Masculino"):
-        if (dt_entry_datetime <= datetime.strptime("2013-12-19", "%Y-%m-%d")):
-            d_t_ant = timedelta(days=0)
-            for i, tipo in enumerate(ids_tipo):
-                d_t_ant = d_t_ant - timedelta(days=int(qtds_dias[i]))
-
-            remaing_time = (dt_entry_datetime.replace(year = dt_entry_datetime.year + 35) - dt_entry_datetime) - ((datetime.now() - dt_entry_datetime) - d_t_ant)
-            if (datetime.now() + remaing_time > datetime.strptime("2021-12-31", "%Y-%m-%d")):
-                ped_flag17 = True
-                remaing_time += timedelta(days=(remaing_time.days*0.17))
-        if (dt_entry_datetime > datetime.strptime("2013-12-19", "%Y-%m-%d")):
-            mili_time = 0
-            n_mili_time = 0
-            for i, tipo in enumerate(ids_tipo):
-                if (df_tipo_tempo[df_tipo_tempo['id_tipo'] == tipo]['is_militar'].values[0] == 1):
-                    mili_time += qtd_dias[i]
-                else:
-                    n_mili_time += qtd_dias[i]
-            if (n_mili_time/365 > 5):
-                n_mili_time = 5*365
-
-            remaing_time = (dt_entry_datetime.replace(year = dt_entry_datetime.year + 35) - dt_entry_datetime) - ((datetime.now() - dt_entry_datetime) -
-                                                       timedelta(days=mili_time[i]) - timedelta(days=n_mili_time[i]))
-            if (datetime.now() + remaing_time > datetime.strptime("2021-12-31", "%Y-%m-%d")):
-                ped_flag17 = True
-                remaing_time += timedelta(days=(remaing_time.days*0.17))
-                if (mili_time < 30*365):
-                    ped_flag4m = True
-                    pd_4m_multiplier = int((30*365 - mili_time)/365)
-                    remaing_time += relativedelta(months=(pd_4m_multiplier*4))
-
+        if (dt_entry <= datetime.strptime("2013-12-19", "%Y-%m-%d")):
+           dt_theoretical_retirement,time_4_month_years = calc_theoretical_retirement(dt_theoretical_retirement =dt_theoretical_retirement ,dt_entry =dt_entry ,min_mili_time_years =None ,max_civil_time_years =None ,tmp_civil =tmp_civil ,tmp_military = tmp_military)
+        if (dt_entry > datetime.strptime("2013-12-19", "%Y-%m-%d")):
+            dt_theoretical_retirement,time_4_month_years = calc_theoretical_retirement(dt_theoretical_retirement =dt_theoretical_retirement ,dt_entry =dt_entry ,min_mili_time_years =30 ,max_civil_time_years =5 ,tmp_civil =tmp_civil ,tmp_military = tmp_military)
     else:
-        if (dt_entry_datetime <= datetime.strptime("2006-08-31", "%Y-%m-%d")):
-            d_t_ant = timedelta(days=0)
-            for i, tipo in enumerate(ids_tipo):
-                d_t_ant = d_t_ant - timedelta(days=int(qtds_dias[i]))
+        if (dt_entry <= datetime.strptime("2006-08-31", "%Y-%m-%d")):
+            dt_theoretical_retirement,time_4_month_years = calc_theoretical_retirement(dt_theoretical_retirement =dt_theoretical_retirement ,dt_entry =dt_entry ,min_mili_time_years =None ,max_civil_time_years =None ,tmp_civil =tmp_civil ,tmp_military = tmp_military)
+        if (dt_entry >= datetime.strptime("2006-09-01", "%Y-%m-%d") and dt_entry <= datetime.strptime("2013-12-19", "%Y-%m-%d")):
+            dt_theoretical_retirement,time_4_month_years = calc_theoretical_retirement(dt_theoretical_retirement =dt_theoretical_retirement ,dt_entry =dt_entry ,min_mili_time_years =20 ,max_civil_time_years =15 ,tmp_civil =tmp_civil ,tmp_military = tmp_military)
+        if (dt_entry > datetime.strptime("2013-12-19", "%Y-%m-%d")):
+            dt_theoretical_retirement,time_4_month_years = calc_theoretical_retirement(dt_theoretical_retirement =dt_theoretical_retirement ,dt_entry =dt_entry ,min_mili_time_years =30 ,max_civil_time_years =5 ,tmp_civil =tmp_civil ,tmp_military = tmp_military)
 
-            remaing_time = (dt_entry_datetime.replace(year = dt_entry_datetime.year + 35) - dt_entry_datetime) - ((datetime.now() - dt_entry_datetime) - d_t_ant)
-            if (datetime.now() + remaing_time > datetime.strptime("2021-12-31", "%Y-%m-%d")):
-                ped_flag17 = True
-                remaing_time += timedelta(days=(remaing_time.days*0.17))
-        if (dt_entry_datetime >= datetime.strptime("2006-09-01", "%Y-%m-%d") and dt_entry_datetime <= datetime.strptime("2013-12-19", "%Y-%m-%d")):
-            remaing_time = (dt_entry_datetime.replace(year = dt_entry_datetime.year + 35) - dt_entry_datetime)
-            mili_time = 0
-            n_mili_time = 0
-            for i, tipo in enumerate(ids_tipo):
-                if (df_tipo_tempo[df_tipo_tempo['id_tipo'] == tipo]['is_militar'].values[0] == 1):
-                    mili_time += qtd_dias[i]
-                else:
-                    n_mili_time += qtd_dias[i]
-            if (n_mili_time/365 > 15):
-                n_mili_time = 15*365
-            remaing_time = (dt_entry_datetime.replace(year = dt_entry_datetime.year + 35) - dt_entry_datetime) - ((datetime.now() - dt_entry_datetime) -
-                                                       timedelta(days=mili_time[i]) - timedelta(days=n_mili_time[i]))
-            if (datetime.now() + remaing_time > datetime.strptime("2021-12-31", "%Y-%m-%d")):
-                ped_flag17 = True
-                remaing_time += timedelta(days=(remaing_time.days*0.17))
-                if (mili_time < 20*365):
-                    ped_flag4m = True
-                    pd_4m_multiplier = int((30*365 - mili_time)/365)
-                    remaing_time += relativedelta(months=(pd_4m_multiplier*4))
-
-        if (dt_entry_datetime > datetime.strptime("2013-12-19", "%Y-%m-%d")):
-            remaing_time = (dt_entry_datetime.replace(year = dt_entry_datetime.year + 35) - dt_entry_datetime)
-            mili_time = 0
-            n_mili_time = 0
-            for i, tipo in enumerate(ids_tipo):
-                if (df_tipo_tempo[df_tipo_tempo['id_tipo'] == tipo]['is_militar'].values[0] == 1):
-                    mili_time += qtd_dias[i]
-                else:
-                    n_mili_time += qtd_dias[i]
-            if (n_mili_time/365 > 5):
-                n_mili_time = 5*365
-            remaing_time = (dt_entry_datetime.replace(year = dt_entry_datetime.year + 35) - dt_entry_datetime) - ((datetime.now() - dt_entry_datetime) -
-                                                       timedelta(days=mili_time[i]) - timedelta(days=n_mili_time[i]))
-            if (datetime.now() + remaing_time > datetime.strptime("2021-12-31", "%Y-%m-%d")):
-                ped_flag17 = True
-                remaing_time += timedelta(days=(remaing_time.days*0.17))
-                if (mili_time < 30*365):
-                    ped_flag4m = True
-                    pd_4m_multiplier = int((30*365 - mili_time)/365)
-                    remaing_time += relativedelta(months=(pd_4m_multiplier*4))
-
-    '''
-    if (gender == "Masculino"):
-        if (dt_entry_datetime <= datetime.strptime("2013-12-19", "%Y-%m-%d")):
-            # os 35 anos de serviço aqui contam trabalhos anteriores?
-            remaing_time = (dt_entry_datetime.replace(year = dt_entry_datetime.year + 35) - dt_entry_datetime) - ((datetime.now() - dt_entry_datetime))
-        if (dt_entry_datetime > datetime.strptime("2013-12-19", "%Y-%m-%d")):
-            if (days_before/365 > 5):
-                days_before = 5*365
-            remaing_time = (dt_entry_datetime.replace(year = dt_entry_datetime.year + 35) - dt_entry_datetime) - (timedelta(days=int(days_before)) + (datetime.now() - dt_entry_datetime))
+    if(dt_theoretical_retirement > datetime.strptime("2021-12-31", "%Y-%m-%d")):
+        #print("diff 17%: ",(dt_theoretical_retirement - datetime.strptime("2022-01-01", "%Y-%m-%d")).days)
+        toll_17_pc = int(0.17*(dt_theoretical_retirement - datetime.strptime("2022-01-01", "%Y-%m-%d")).days)
     else:
-        if (dt_entry_datetime <= datetime.strptime("2006-08-31", "%Y-%m-%d")):
-            remaing_time = (dt_entry_datetime.replace(year = dt_entry_datetime.year + 35) - dt_entry_datetime) - ( (datetime.now() - dt_entry_datetime))
-        if (dt_entry_datetime >= datetime.strptime("2006-09-01", "%Y-%m-%d") and dt_entry_datetime <= datetime.strptime("2013-12-19", "%Y-%m-%d")):
-            if (days_before/365 > 20):
-                days_before = 20*365
-            
-            remaing_time = (dt_entry_datetime.replace(year = dt_entry_datetime.year + 35) - dt_entry_datetime) - (timedelta(days=int(days_before)) + (datetime.now() - dt_entry_datetime))
-
-        
-        if (dt_entry_datetime > datetime.strptime("2013-12-19", "%Y-%m-%d")):
-            if (days_before/365 > 5):
-                days_before = 5*365
-            
-            remaing_time = (dt_entry_datetime.replace(year = dt_entry_datetime.year + 35) - dt_entry_datetime) - (timedelta(days=int(days_before)) + (datetime.now() - dt_entry_datetime))
-    ped = {"pedagio 17%": 0, "pedagio 4 meses": 0}
-    if(datetime.now() + remaing_time>datetime.strptime("2021-12-31", "%Y-%m-%d")):
-        ped["pedagio 17%"] = ( remaing_time + timedelta(days = (remaing_time.days*0.17))).days
-        ped["pedagio 4 meses"] = ( remaing_time + relativedelta(months=+4)).days
-    '''
-
-    return datetime.now() + remaing_time, {"pedagio 17%": ped_flag17, "pedagio 4 meses": ped_flag4m}
+        toll_17_pc = 0
+    #print("toll_17_pc",toll_17_pc)
+    if(time_4_month_years > 0):
+        toll_4_month = int(4*(time_4_month_years/365.25))
+    else:
+        toll_4_month = 0
+    dt_ret = dt_theoretical_retirement + timedelta(days=toll_17_pc) + timedelta(days=toll_4_month)
+    if(dt_ret < datetime.now()):
+        dt_ret = datetime.now()
+    return dt_ret,{"toll_17_pc (days)":toll_17_pc,"toll_4_month (months)":toll_4_month,"tmp_military (days)":tmp_military,"tmp_civil (days)":tmp_civil}
 
 
 def analyse_retirement(df_militares, df_tipo_tempo, df_tempo_militares):
@@ -335,7 +279,7 @@ def analyse_retirement(df_militares, df_tipo_tempo, df_tempo_militares):
     for mat in matriculas:
         line = df_militares[df_militares['matrícula'] == mat]
         sx = line['sexo'].values[0]
-        # print(sx)
+        #print(mat)
         ids_tipo, qtds_dias = [], []
         tipo_tempo = df_tempo_militares[df_tempo_militares['matricula_militar'] == mat]
         if (len(tipo_tempo) > 0):
@@ -347,7 +291,7 @@ def analyse_retirement(df_militares, df_tipo_tempo, df_tempo_militares):
         days_before = line['tempo anterior_tempo em dias'].values[0]
         ret_prev, ped = calc_retirement(
             sx, dt_entry, ids_tipo, qtds_dias, df_tipo_tempo)
-
+        #print()
         data = {
             "Nome": line['nome'].values[0],
             "Matricula": mat,

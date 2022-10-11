@@ -2,3 +2,4 @@ id_tipo,nm_tipo,is_militar
 0,Privado,0
 1,Público SC,0
 2,Público outros,0
+3,Militar,1
